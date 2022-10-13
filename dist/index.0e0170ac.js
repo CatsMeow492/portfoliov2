@@ -1,0 +1,83 @@
+const neurons = document.querySelector("neurons");
+neurons.width = window.innerWidth;
+neurons.height = window.innerHeight;
+const ctx = neurons.getContext("2d");
+const particules = [];
+const configuration = {
+    numberParticules: 120,
+    minSpeed: 0.4,
+    maxSpeed: 0.8,
+    maxDistance: 0.07 * window.innerWidth + 0.05 * window.innerHeight,
+    radius: 2,
+    backgroundColor: "#000",
+    frontColor: "#FFF",
+    mouseSpace: 100
+};
+let mouseX = -300;
+let mouseY = -300;
+window.addEventListener("mousemove", (e)=>{
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+window.addEventListener("resize", ()=>{
+    neurons.width = window.innerWidth;
+    neurons.height = window.innerHeight;
+});
+const render = ()=>{
+    requestAnimationFrame(render);
+    ctx.fillStyle = configuration.backgroundColor;
+    ctx.fillRect(0, 0, neurons.width, neurons.height);
+    particules.forEach((particule)=>{
+        const x = particule.x + particule.speedX;
+        const y = particule.y + particule.speedY;
+        if (x <= 0 || x >= window.innerWidth) particule.speedX *= -1;
+        if (y <= 0 || y >= window.innerHeight) particule.speedY *= -1;
+        particule.x = x;
+        particule.y = y;
+        const mouseDx = mouseX - particule.x;
+        const mouseDy = mouseY - particule.y;
+        const mouseD = Math.sqrt(mouseDx * mouseDx + mouseDy * mouseDy);
+        configuration.mouseSpace;
+        ctx.beginPath();
+        ctx.fillStyle = configuration.frontColor;
+        ctx.arc(particule.x, particule.y, configuration.radius, 0, Math.PI * 2, true);
+        ctx.fill();
+        particules.forEach((nextParticule)=>{
+            const dx = particule.x - nextParticule.x;
+            const dy = particule.y - nextParticule.y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d <= configuration.maxDistance) {
+                ctx.save();
+                ctx.globalAlpha = 1 - d / configuration.maxDistance;
+                ctx.beginPath();
+                ctx.strokeStyle = configuration.frontColor;
+                ctx.moveTo(particule.x, particule.y);
+                ctx.lineTo(nextParticule.x, nextParticule.y);
+                ctx.stroke();
+                ctx.restore();
+            }
+        });
+    });
+};
+const createParticules = ()=>{
+    return new Promise((resolve)=>{
+        for(let i = 0; i < configuration.numberParticules; i++){
+            const particule = {
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                speedX: Math.random() * (configuration.maxSpeed - configuration.minSpeed) + configuration.minSpeed,
+                speedY: Math.random() * (configuration.maxSpeed - configuration.minSpeed) + configuration.minSpeed,
+                isColliding: false
+            };
+            if (Math.random() <= 0.5) particule.speedX *= -1;
+            if (Math.random() <= 0.5) particule.speedY *= -1;
+            particules.push(particule);
+        }
+        resolve();
+    });
+};
+createParticules().then(()=>{
+    render();
+});
+
+//# sourceMappingURL=index.0e0170ac.js.map

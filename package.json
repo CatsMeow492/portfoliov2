@@ -5,14 +5,16 @@
   "main": "index.js",
   "scripts": {
     "dev": "parcel src/index.html",
-    "build": "parcel build src/index.html"
+    "build": "parcel build src/app/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "",
   "devDependencies": {
     "@parcel/transformer-glsl": "^2.4.1",
-    "parcel": "latest"
+    "cssnano": "^5.1.13",
+    "parcel": "latest",
+    "postcss": "^8.2.15"
   },
   "dependencies": {
     "gsap": "^3.7.0",
